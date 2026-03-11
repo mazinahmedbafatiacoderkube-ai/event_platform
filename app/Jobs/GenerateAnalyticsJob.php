@@ -2,26 +2,23 @@
 
 namespace App\Jobs;
 
+use App\Models\Event;
+use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Foundation\Bus\Dispatchable;
 
 class GenerateAnalyticsJob implements ShouldQueue
 {
-    use Queueable;
 
-    /**
-     * Create a new job instance.
-     */
-    public function __construct()
-    {
-        //
-    }
+use Dispatchable, Queueable;
 
-    /**
-     * Execute the job.
-     */
-    public function handle(): void
-    {
-        //
-    }
+public function handle()
+{
+
+$totalEvents = Event::count();
+
+\Log::info('Total events: '.$totalEvents);
+
+}
+
 }

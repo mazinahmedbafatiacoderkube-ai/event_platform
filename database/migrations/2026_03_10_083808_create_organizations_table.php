@@ -12,9 +12,9 @@ return new class extends Migration {
     {
         Schema::create('organizations', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->foreignId('owner_id');
-            $table->string('plan')->default('free');
+            $table->string('name');        // Organization Name
+            $table->foreignId('owner_id')->nullable(); // Owner user ID
+            $table->string('plan')->default('free');   // Free or Pro
             $table->timestamps();
         });
     }

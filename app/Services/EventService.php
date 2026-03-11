@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services;
 
 use App\Repositories\EventRepository;
@@ -6,24 +7,28 @@ use App\Events\EventCreated;
 
 class EventService
 {
-    protected $repository;
 
-    public function __construct(EventRepository $repository)
-    {
-        $this->repository = $repository;
-    }
+protected $repo;
 
-    public function createEvent($data)
-    {
-        $event = $this->repository->create($data);
+public function __construct(EventRepository $repo)
+{
+$this->repo = $repo;
+}
 
-        event(new EventCreated($event));
+public function list()
+{
+return $this->repo->getAll();
+}
 
-        return $event;
-    }
+public function create($data)
+{
 
-    public function getEvents($orgId)
-    {
-        return $this->repository->all($orgId);
-    }
+$event = $this->repo->create($data);
+
+event(new EventCreated($event));
+
+return $event;
+
+}
+
 }

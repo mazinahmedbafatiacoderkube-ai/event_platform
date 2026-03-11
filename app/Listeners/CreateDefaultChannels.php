@@ -7,17 +7,15 @@ use App\Models\Channel;
 
 class CreateDefaultChannels
 {
-    /**
-     * Handle the event.
-     *
-     * @param  \App\Events\EventCreated  $event
-     * @return void
-     */
-    public function handle(EventCreated $event)
-    {
-        Channel::create([
-            'event_id' => $event->event->id,
-            'name'     => 'general',
-        ]);
-    }
+
+public function handle(EventCreated $event)
+{
+
+Channel::create([
+'name'=>'General',
+'event_id'=>$event->event->id
+]);
+
+}
+
 }
