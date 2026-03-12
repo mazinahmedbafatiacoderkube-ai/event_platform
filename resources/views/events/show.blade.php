@@ -41,6 +41,7 @@
 </div>
 </div>
 
+{{-- Only OWNER can see creator --}}
 @if(auth()->user()->role === 'owner')
 
 <div class="row mb-3">
@@ -49,17 +50,25 @@
 {{ $event->creator->name ?? 'N/A' }}
 </div>
 </div>
+
 @endif
 
 <hr>
 
 <div class="d-flex gap-2">
 
-@if(auth()->user()->role === 'owner' || $event->created_by === auth()->id())
+{{-- Edit button based on policy --}}
+@can('update', $event)
 
 <a href="{{ route('events.edit', $event->id) }}" class="btn btn-warning">
 Edit
 </a>
+
+@endcan
+
+
+{{-- Delete button based on policy --}}
+@can('delete', $event)
 
 <form action="{{ route('events.destroy', $event->id) }}" method="POST">
 @csrf
@@ -67,15 +76,12 @@ Edit
 
 <button class="btn btn-danger"
 onclick="return confirm('Are you sure you want to delete this event?')">
-Delete </button>
+Delete
+</button>
 
 </form>
 
-@else
-
-<button class="btn btn-secondary" disabled>Edit</button> <button class="btn btn-secondary" disabled>Delete</button>
-
-@endif
+@endcan
 
 <a href="{{ route('events.index') }}" class="btn btn-outline-secondary">
 Back

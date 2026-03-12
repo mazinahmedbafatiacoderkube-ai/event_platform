@@ -76,6 +76,7 @@
                         <th>Name</th>
                         <th>Email</th>
                         <th>Role</th>
+                        <th width="150">Action</th>
                     </tr>
                 </thead>
 
@@ -87,12 +88,34 @@
                         <td>{{ $member->name }}</td>
                         <td>{{ $member->email }}</td>
                         <td>{{ $member->role }}</td>
+
+                        <td>
+
+                            {{-- Prevent owner deleting himself --}}
+                            @if($member->id !== auth()->id())
+
+                            <form action="{{ route('staff.delete',$member->id) }}" method="POST">
+                                @csrf
+                                @method('DELETE')
+
+                                <button class="btn btn-danger btn-sm"
+                                onclick="return confirm('Delete this staff member?')">
+                                    Delete
+                                </button>
+                            </form>
+
+                            @else
+                                <span class="text-muted">Owner</span>
+                            @endif
+
+                        </td>
+
                     </tr>
 
                 @empty
 
                     <tr>
-                        <td colspan="3" class="text-center">
+                        <td colspan="4" class="text-center">
                             No Staff Found
                         </td>
                     </tr>

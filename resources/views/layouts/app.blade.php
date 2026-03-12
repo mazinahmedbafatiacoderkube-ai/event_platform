@@ -21,16 +21,16 @@
 <a class="navbar-brand" href="/dashboard">Event Platform</a>
 
 <div>
+{{-- 
+<a class="nav-link text-white d-inline" href="/">Events</a>
 
-<a class="nav-link text-white d-inline" href="/events">Events</a>
-
-<a class="nav-link text-white d-inline" href="/attendees">Attendees</a>
+{{-- <a class="nav-link text-white d-inline" href="/attendees">Attendees</a>
 
 <a class="nav-link text-white d-inline" href="/chat">Chat</a>
 
-<a class="nav-link text-white d-inline" href="/analytics">Analytics</a>
+<a class="nav-link text-white d-inline" href="/analytics">Analytics</a> --}}
 
-</div>
+{{-- </div> --}} --}}
 
 </div>
 

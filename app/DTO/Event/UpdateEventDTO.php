@@ -8,7 +8,7 @@ class UpdateEventDTO
         public int $id,
         public string $title,
         public string $description,
-        public string $startTime,
-        public string $endTime
+        public string $start_time,
+        public string $end_time
     ) {}
 }

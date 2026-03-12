@@ -21,6 +21,23 @@ class Event extends Model
 
     /*
     |--------------------------------------------------------------------------
+    | Boot Method (Organization Scope)
+    |--------------------------------------------------------------------------
+    */
+
+    protected static function booted()
+    {
+        if (auth()->check()) {
+
+            static::addGlobalScope('organization', function ($query) {
+                $query->where('organization_id', auth()->user()->organization_id);
+            });
+
+        }
+    }
+
+    /*
+    |--------------------------------------------------------------------------
     | Relationships
     |--------------------------------------------------------------------------
     */

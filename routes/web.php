@@ -13,16 +13,33 @@ use App\Http\Controllers\ChatController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\StaffController;
+use App\Http\Controllers\LandingController;
 
 /*
 |--------------------------------------------------------------------------
-| HOME
+| HOME (ORGANIZATION LANDING PAGE)
 |--------------------------------------------------------------------------
 */
 
-Route::get('/', function () {
-    return redirect()->route('login');
-});
+Route::get('/', [LandingController::class, 'index'])->name('landing');
+
+Route::get('/organization/{id}', [LandingController::class, 'events'])
+    ->name('organization.events');
+
+
+/*
+|--------------------------------------------------------------------------
+| BOOK EVENT TICKET (PUBLIC)
+|--------------------------------------------------------------------------
+*/
+
+/* SHOW BOOK TICKET PAGE */
+Route::get('/book-ticket/{event}', [AttendeeController::class, 'index'])
+    ->name('book.ticket.page');
+
+/* STORE ATTENDEE */
+Route::post('/book-ticket/{event}', [AttendeeController::class, 'store'])
+    ->name('ticket.book');
 
 
 /*
@@ -67,7 +84,7 @@ Route::post('/reset-password', function (Request $request) {
     ]);
 
     $status = Password::reset(
-        $request->only('email','password','password_confirmation','token'),
+        $request->only('email', 'password', 'password_confirmation', 'token'),
         function ($user, $password) {
 
             $user->password = Hash::make($password);
@@ -76,7 +93,7 @@ Route::post('/reset-password', function (Request $request) {
     );
 
     if ($status == Password::PASSWORD_RESET) {
-        return redirect()->route('login')->with('success','Password reset successful');
+        return redirect()->route('login')->with('success', 'Password reset successful');
     }
 
     return back()->withErrors(['email' => __($status)]);
@@ -108,7 +125,7 @@ Route::middleware('auth')->group(function () {
     |--------------------------------------------------------------------------
     */
 
-    Route::get('/dashboard', [DashboardController::class,'index'])
+    Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');
 
 
@@ -118,21 +135,21 @@ Route::middleware('auth')->group(function () {
     |--------------------------------------------------------------------------
     */
 
-    Route::prefix('events')->group(function(){
+    Route::prefix('events')->group(function () {
 
-        Route::get('/',[EventController::class,'index'])->name('events.index');
+        Route::get('/', [EventController::class, 'index'])->name('events.index');
 
-        Route::get('/create',[EventController::class,'create'])->name('events.create');
+        Route::get('/create', [EventController::class, 'create'])->name('events.create');
 
-        Route::post('/',[EventController::class,'store'])->name('events.store');
+        Route::post('/', [EventController::class, 'store'])->name('events.store');
 
-        Route::get('/{id}',[EventController::class,'show'])->name('events.show');
+        Route::get('/{id}', [EventController::class, 'show'])->name('events.show');
 
-        Route::get('/{id}/edit',[EventController::class,'edit'])->name('events.edit');
+        Route::get('/{id}/edit', [EventController::class, 'edit'])->name('events.edit');
 
-        Route::put('/{id}',[EventController::class,'update'])->name('events.update');
+        Route::put('/{id}', [EventController::class, 'update'])->name('events.update');
 
-        Route::delete('/{id}',[EventController::class,'destroy'])->name('events.destroy');
+        Route::delete('/{id}', [EventController::class, 'destroy'])->name('events.destroy');
 
     });
 
@@ -143,15 +160,15 @@ Route::middleware('auth')->group(function () {
     |--------------------------------------------------------------------------
     */
 
-    Route::prefix('staff')->group(function(){
+    Route::prefix('staff')->group(function () {
 
-        Route::get('/',[StaffController::class,'index'])
+        Route::get('/', [StaffController::class, 'index'])
             ->name('staff.index');
 
-        Route::post('/',[StaffController::class,'store'])
+        Route::post('/', [StaffController::class, 'store'])
             ->name('staff.store');
 
-        Route::delete('/{id}',[StaffController::class,'destroy'])
+        Route::delete('/{id}', [StaffController::class, 'destroy'])
             ->name('staff.delete');
 
     });
@@ -163,7 +180,7 @@ Route::middleware('auth')->group(function () {
     |--------------------------------------------------------------------------
     */
 
-    Route::get('/attendees',[AttendeeController::class,'index'])
+    Route::get('/attendees/{event}', [AttendeeController::class, 'index'])
         ->name('attendees.index');
 
 
@@ -173,7 +190,7 @@ Route::middleware('auth')->group(function () {
     |--------------------------------------------------------------------------
     */
 
-    Route::get('/chat',[ChatController::class,'index'])
+    Route::get('/chat', [ChatController::class, 'index'])
         ->name('chat.index');
 
 
@@ -183,7 +200,10 @@ Route::middleware('auth')->group(function () {
     |--------------------------------------------------------------------------
     */
 
-    Route::get('/analytics',[AnalyticsController::class,'index'])
+    Route::get('/analytics', [AnalyticsController::class, 'index'])
         ->name('analytics.index');
+    Route::get('/book', function () {
+        return view('landing.book');
+    })->name('book');
 
 });

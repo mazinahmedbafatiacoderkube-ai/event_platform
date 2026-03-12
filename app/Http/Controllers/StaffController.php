@@ -30,4 +30,12 @@ class StaffController extends Controller
 
         return redirect()->back()->with('success','Staff Created');
     }
+
+    // ✅ ADD THIS METHOD
+    public function destroy($id, StaffService $staffService)
+    {
+        $staffService->deleteStaff($id);
+
+        return redirect()->back()->with('success','Staff Deleted Successfully');
+    }
 }

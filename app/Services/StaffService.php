@@ -24,4 +24,10 @@ class StaffService
             ->where('role', 'event_manager')
             ->get();
     }
+    public function deleteStaff($id)
+{
+    return User::where('organization_id', auth()->user()->organization_id)
+                ->where('id', $id)
+                ->delete();
+}
 }
