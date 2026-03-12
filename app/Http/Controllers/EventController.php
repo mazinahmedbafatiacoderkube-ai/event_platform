@@ -2,62 +2,50 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\EventService;
 use Illuminate\Http\Request;
+use App\Http\Requests\CreateEventRequest;
+
 use App\Models\Event;
+
+use App\DTO\Event\CreateEventDTO;
+use App\DTO\Event\UpdateEventDTO;
+
+use App\Actions\Event\CreateEventAction;
+use App\Actions\Event\UpdateEventAction;
+use App\Actions\Event\DeleteEventAction;
 
 class EventController extends Controller
 {
 
-    protected $service;
-
-    public function __construct(EventService $service)
-    {
-        $this->service = $service;
-    }
-
-    /**
-     * Display list of events
-     */
     public function index()
     {
-        $events = $this->service->list();
+        $events = Event::latest()->get();
 
         return view('events.index', compact('events'));
     }
 
-    /**
-     * Show create form
-     */
     public function create()
     {
         return view('events.create');
     }
 
-    /**
-     * Store new event
-     */
-    public function store(Request $request)
+    public function store(CreateEventRequest $request, CreateEventAction $action)
     {
+        $dto = new CreateEventDTO(
+            auth()->user()->organization_id,
+            $request->title,
+            $request->description,
+            $request->start_time,
+            $request->end_time,
+            auth()->id()
+        );
 
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'start_time' => 'required|date',
-            'end_time' => 'required|date'
-        ]);
-
-        $validated['created_by'] = auth()->id();
-
-        $this->service->create($validated);
+        $action->execute($dto);
 
         return redirect()->route('events.index')
-            ->with('success', 'Event created successfully');
+            ->with('success','Event created');
     }
 
-    /**
-     * Show single event
-     */
     public function show($id)
     {
         $event = Event::findOrFail($id);
@@ -65,54 +53,34 @@ class EventController extends Controller
         return view('events.show', compact('event'));
     }
 
-    /**
-     * Show edit form
-     */
     public function edit($id)
     {
         $event = Event::findOrFail($id);
 
-        $this->authorize('update', $event);
-
         return view('events.edit', compact('event'));
     }
 
-    /**
-     * Update event
-     */
-    public function update(Request $request, $id)
+    public function update(Request $request, $id, UpdateEventAction $action)
     {
+        $dto = new UpdateEventDTO(
+            $id,
+            $request->title,
+            $request->description,
+            $request->start_time,
+            $request->end_time
+        );
 
-        $event = Event::findOrFail($id);
-
-        $this->authorize('update', $event);
-
-        $validated = $request->validate([
-            'title' => 'required',
-            'description' => 'nullable',
-            'start_time' => 'required',
-            'end_time' => 'required'
-        ]);
-
-        $event->update($validated);
+        $action->execute($dto);
 
         return redirect()->route('events.index')
-            ->with('success', 'Event updated successfully');
+            ->with('success','Event updated');
     }
 
-    /**
-     * Delete event
-     */
-    public function destroy($id)
+    public function destroy($id, DeleteEventAction $action)
     {
-
-        $event = Event::findOrFail($id);
-
-        $this->authorize('delete', $event);
-
-        $event->delete();
+        $action->execute($id);
 
         return redirect()->route('events.index')
-            ->with('success', 'Event deleted successfully');
+            ->with('success','Event deleted');
     }
 }

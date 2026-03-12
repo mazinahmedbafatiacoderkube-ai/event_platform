@@ -1,10 +1,12 @@
 @extends('layouts.app')
 
 @section('content')
+
 <div class="container mt-5">
 
     <div class="card shadow-sm">
         <div class="card-body">
+
             <h2 class="mb-3">Dashboard</h2>
             <hr>
 
@@ -18,42 +20,80 @@
             </div>
 
             <hr>
+
             <h5>Quick Actions</h5>
-            <div class="d-flex gap-2 mt-2">
-                <a href="#" class="btn btn-primary">Create Event</a>
-                <a href="#" class="btn btn-secondary">View Events</a>
-                <a href="#" class="btn btn-info">Analytics</a>
+
+            <div class="d-flex flex-wrap gap-2 mt-2">
+
+                <a href="{{ route('events.create') }}" class="btn btn-primary">
+                    Create Event
+                </a>
+
+                <a href="{{ route('events.index') }}" class="btn btn-secondary">
+                    View Events
+                </a>
+
+                <a href="#" class="btn btn-info">
+                    Analytics
+                </a>
+
+                {{-- Owner Only Button --}}
+                @if(auth()->user()->role == 'owner')
+                    <a href="{{ route('staff.index') }}" class="btn btn-success">
+                        Manage Staff
+                    </a>
+                @endif
+
             </div>
 
             <hr>
+
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                <button type="submit" class="btn btn-danger">Logout</button>
+                <button type="submit" class="btn btn-danger">
+                    Logout
+                </button>
             </form>
+
         </div>
     </div>
 
+
+    {{-- Statistics Cards --}}
     <div class="row mt-4">
+
         <div class="col-md-4">
-            <div class="card p-3">
+            <div class="card shadow-sm p-3">
                 <h5>Total Events</h5>
                 <h3>{{ $totalEvents }}</h3>
             </div>
         </div>
 
         <div class="col-md-4">
-            <div class="card p-3">
+            <div class="card shadow-sm p-3">
                 <h5>Total Attendees</h5>
                 <h3>{{ $totalAttendees }}</h3>
             </div>
         </div>
 
         <div class="col-md-4">
-            <div class="card p-3">
+            <div class="card shadow-sm p-3">
                 <h5>Attendance Rate</h5>
                 <h3>{{ $attendanceRate }}%</h3>
             </div>
         </div>
+
     </div>
+
 </div>
+
+
+{{-- Prevent back after logout --}}
+<script>
+history.pushState(null, null, location.href);
+window.onpopstate = function () {
+    history.go(1);
+};
+</script>
+
 @endsection

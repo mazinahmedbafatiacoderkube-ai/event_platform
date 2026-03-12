@@ -3,32 +3,22 @@
 namespace App\Services;
 
 use App\Repositories\EventRepository;
-use App\Events\EventCreated;
+use App\DTO\Event\CreateEventDTO;
 
 class EventService
 {
+    public function __construct(private EventRepository $repository) {}
 
-protected $repo;
-
-public function __construct(EventRepository $repo)
-{
-$this->repo = $repo;
-}
-
-public function list()
-{
-return $this->repo->getAll();
-}
-
-public function create($data)
-{
-
-$event = $this->repo->create($data);
-
-event(new EventCreated($event));
-
-return $event;
-
-}
-
+    public function createEvent(CreateEventDTO $dto)
+    {
+        return $this->repository->create([
+            'organization_id' => $dto->organizationId,
+            'title' => $dto->title,
+            'description' => $dto->description,
+            'start_time' => $dto->startTime,
+            'end_time' => $dto->endTime,
+            'status' => 'scheduled',
+            'created_by' => $dto->createdBy
+        ]);
+    }
 }

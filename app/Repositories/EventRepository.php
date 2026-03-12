@@ -6,25 +6,27 @@ use App\Models\Event;
 
 class EventRepository
 {
+    public function create(array $data)
+    {
+        return Event::create($data);
+    }
 
-public function getAll()
-{
-return Event::latest()->get();
-}
+    public function update($dto)
+    {
+        $event = Event::findOrFail($dto->id);
 
-public function find($id)
-{
-return Event::findOrFail($id);
-}
+        $event->update([
+            'title' => $dto->title,
+            'description' => $dto->description,
+            'start_time' => $dto->startTime,
+            'end_time' => $dto->endTime
+        ]);
 
-public function create($data)
-{
-return Event::create($data);
-}
+        return $event;
+    }
 
-public function delete($event)
-{
-return $event->delete();
-}
-
+    public function delete($id)
+    {
+        return Event::destroy($id);
+    }
 }

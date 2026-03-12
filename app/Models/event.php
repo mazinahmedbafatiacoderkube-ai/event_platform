@@ -2,12 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Event extends Model
 {
-
     use HasFactory;
 
     protected $fillable = [
@@ -26,6 +25,11 @@ class Event extends Model
     |--------------------------------------------------------------------------
     */
 
+    public function organization()
+    {
+        return $this->belongsTo(Organization::class);
+    }
+
     public function attendees()
     {
         return $this->hasMany(Attendee::class);
@@ -38,7 +42,6 @@ class Event extends Model
 
     public function creator()
     {
-        return $this->belongsTo(User::class,'created_by');
+        return $this->belongsTo(User::class, 'created_by');
     }
-
 }

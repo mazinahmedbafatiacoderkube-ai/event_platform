@@ -71,6 +71,9 @@ Go To Login
 <button type="submit" class="btn btn-success">
 Register Organization
 </button>
+<a href="{{ route('login') }}" class="btn btn-primary">
+Login Page
+</a>
 
 </form>
 
