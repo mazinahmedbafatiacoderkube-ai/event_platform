@@ -85,8 +85,31 @@
 
     </div>
 
-</div>
+    {{-- Owner: Add button to view attendees per event --}}
+    @if(auth()->user()->role == 'owner' && isset($dashboardData->events))
+        <hr class="mt-4">
+        <h5>Events</h5>
 
+        @foreach($dashboardData->events as $event)
+            <div class="card shadow-sm mb-3">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>{{ $event->title ?? $event->name }}</strong>
+                        @if(isset($event->start_time))
+                            ({{ \Carbon\Carbon::parse($event->start_time)->format('d M Y') }})
+                        @endif
+                    </div>
+                    <div>
+                        <a href="{{ route('events.attendees', $event->id) }}" class="btn btn-info btn-sm">
+                            View Attendees
+                        </a>
+                    </div>
+                </div>
+            </div>
+        @endforeach
+    @endif
+
+</div>
 
 {{-- Prevent back after logout --}}
 <script>

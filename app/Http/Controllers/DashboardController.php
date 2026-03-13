@@ -5,36 +5,31 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Event;
 use App\Models\Attendee;
+use App\Actions\Dashboard\GetOwnerDashboardDataAction;
 
 class DashboardController extends Controller
 {
+    public function index(Request $request, GetOwnerDashboardDataAction $dashboardAction)
+    {
+        $orgId = auth()->user()->organization_id;
 
-public function index(Request $request)
-{
+        // Total events, attendees, and attendance rate via action
+        $dashboardData = $dashboardAction->execute(
+            $orgId,
+            auth()->user()->role === 'owner' // load events with attendees only for owner
+        );
 
-$orgId = auth()->user()->organization_id;
+        // Keep old variable names so your Blade works without changes
+        $totalEvents = $dashboardData->totalEvents;
+        $totalAttendees = $dashboardData->totalAttendees;
+        $attendanceRate = $dashboardData->attendanceRate;
 
-// Total events of this organization
-$totalEvents = Event::where('organization_id', $orgId)->count();
-
-// Total attendees for events of this organization
-$totalAttendees = Attendee::whereHas('event', function ($query) use ($orgId) {
-    $query->where('organization_id', $orgId);
-})->count();
-
-// Attendance Rate
-if ($totalEvents > 0) {
-    $attendanceRate = round(($totalAttendees / ($totalEvents * 10)) * 100);
-} else {
-    $attendanceRate = 0;
-}
-
-return view('dashboard.index', compact(
-'totalEvents',
-'totalAttendees',
-'attendanceRate'
-));
-
-}
-
+        return view('dashboard.index', compact(
+            'totalEvents',
+            'totalAttendees',
+            'attendanceRate',
+            'dashboardData', // optionally pass full data if you want events in Blade
+            'orgId'
+        ));
+    }
 }

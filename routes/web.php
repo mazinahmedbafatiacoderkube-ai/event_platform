@@ -9,6 +9,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\AttendeeController;
+use App\Http\Controllers\EventAttendeeController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\ForgotPasswordController;
@@ -26,7 +27,6 @@ Route::get('/', [LandingController::class, 'index'])->name('landing');
 Route::get('/organization/{id}', [LandingController::class, 'events'])
     ->name('organization.events');
 
-
 /*
 |--------------------------------------------------------------------------
 | BOOK EVENT TICKET (PUBLIC)
@@ -40,7 +40,6 @@ Route::get('/book-ticket/{event}', [AttendeeController::class, 'index'])
 /* STORE ATTENDEE */
 Route::post('/book-ticket/{event}', [AttendeeController::class, 'store'])
     ->name('ticket.book');
-
 
 /*
 |--------------------------------------------------------------------------
@@ -63,7 +62,6 @@ Route::middleware('guest')->group(function () {
         ->name('password.email');
 });
 
-
 /*
 |--------------------------------------------------------------------------
 | RESET PASSWORD
@@ -73,7 +71,6 @@ Route::middleware('guest')->group(function () {
 Route::get('/reset-password/{token}', function ($token) {
     return view('auth.reset-password', ['token' => $token]);
 })->name('password.reset');
-
 
 Route::post('/reset-password', function (Request $request) {
 
@@ -86,7 +83,6 @@ Route::post('/reset-password', function (Request $request) {
     $status = Password::reset(
         $request->only('email', 'password', 'password_confirmation', 'token'),
         function ($user, $password) {
-
             $user->password = Hash::make($password);
             $user->save();
         }
@@ -99,7 +95,6 @@ Route::post('/reset-password', function (Request $request) {
     return back()->withErrors(['email' => __($status)]);
 })->name('password.update');
 
-
 /*
 |--------------------------------------------------------------------------
 | LOGOUT
@@ -109,7 +104,6 @@ Route::post('/reset-password', function (Request $request) {
 Route::post('/logout', [AuthController::class, 'logout'])
     ->middleware('auth')
     ->name('logout');
-
 
 /*
 |--------------------------------------------------------------------------
@@ -127,7 +121,6 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');
-
 
     /*
     |--------------------------------------------------------------------------
@@ -151,8 +144,14 @@ Route::middleware('auth')->group(function () {
 
         Route::delete('/{id}', [EventController::class, 'destroy'])->name('events.destroy');
 
+        /*
+        |--------------------------------------------------------------------------
+        | VIEW ATTENDEES FOR EVENT (OWNER DASHBOARD BUTTON)
+        |--------------------------------------------------------------------------
+        */
+        Route::get('/{event}/attendees', [EventAttendeeController::class, 'index'])
+            ->name('events.attendees');
     });
-
 
     /*
     |--------------------------------------------------------------------------
@@ -170,19 +169,7 @@ Route::middleware('auth')->group(function () {
 
         Route::delete('/{id}', [StaffController::class, 'destroy'])
             ->name('staff.delete');
-
     });
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | ATTENDEES
-    |--------------------------------------------------------------------------
-    */
-
-    Route::get('/attendees/{event}', [AttendeeController::class, 'index'])
-        ->name('attendees.index');
-
 
     /*
     |--------------------------------------------------------------------------
@@ -193,7 +180,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/chat', [ChatController::class, 'index'])
         ->name('chat.index');
 
-
     /*
     |--------------------------------------------------------------------------
     | ANALYTICS
@@ -202,8 +188,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/analytics', [AnalyticsController::class, 'index'])
         ->name('analytics.index');
+
     Route::get('/book', function () {
         return view('landing.book');
     })->name('book');
-
 });
