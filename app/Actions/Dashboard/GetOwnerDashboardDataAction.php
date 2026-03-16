@@ -17,28 +17,33 @@ class GetOwnerDashboardDataAction
         $this->attendeeRepo = $attendeeRepo;
     }
 
-    /**
-     * Execute the dashboard logic
-     * 
-     * @param int $organizationId
-     * @param bool $withEvents Load attendees per event for owners
-     * @return DashboardDataDTO
-     */
-    public function execute(int $organizationId, bool $withEvents = false): DashboardDataDTO
+    public function execute(int $organizationId, bool $isOwner = false): DashboardDataDTO
     {
-        // Total events
-        $totalEvents = $this->eventRepo->countEventsByOrganization($organizationId);
+        if ($isOwner) {
 
-        // Total attendees
-        $totalAttendees = $this->attendeeRepo->countAttendeesByOrganization($organizationId);
+            // Owner → all events in organization
+            $totalEvents = $this->eventRepo->countEventsByOrganization($organizationId);
 
-        // Attendance rate (assume 10 expected per event)
-        $attendanceRate = $totalEvents > 0 
+            $totalAttendees = $this->attendeeRepo->countAttendeesByOrganization($organizationId);
+
+            $events = $this->eventRepo->getEventsWithAttendees($organizationId);
+
+        } else {
+
+            // User → only his events
+            $userId = auth()->id();
+
+            $totalEvents = $this->eventRepo->countEventsByUser($userId);
+
+            $totalAttendees = $this->attendeeRepo->countAttendeesByUserEvents($userId);
+
+            $events = $this->eventRepo->getEventsWithAttendeesByUser($userId);
+
+        }
+
+        $attendanceRate = $totalEvents > 0
             ? round(($totalAttendees / ($totalEvents * 10)) * 100)
             : 0;
-
-        // Load events with attendees if needed
-        $events = $withEvents ? $this->eventRepo->getEventsWithAttendees($organizationId) : null;
 
         return new DashboardDataDTO($totalEvents, $totalAttendees, $attendanceRate, $events);
     }

@@ -2,20 +2,6 @@
 
 @section('content')
 
-<!-- NAVBAR -->
-<nav class="navbar navbar-dark bg-dark shadow">
-<div class="container">
-
-<a class="navbar-brand fw-bold" href="/">EventSphere</a>
-
-<a href="{{ route('book') }}" class="btn btn-light">
-Home
-</a>
-
-</div>
-</nav>
-
-<!-- BOOKING CARD -->
 <div class="container d-flex justify-content-center align-items-center" style="min-height:80vh;">
 
 <div class="card shadow-lg p-4" style="width:420px;border-radius:12px;">
@@ -58,4 +44,4 @@ Book Ticket
 </div>
 </div>
 
-@endsections
+@endsection

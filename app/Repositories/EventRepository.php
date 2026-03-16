@@ -26,6 +26,9 @@ class EventRepository
             'start_time' => $dto->startTime,
             'end_time' => $dto->endTime,
             'organization_id' => $dto->organizationId,
+
+            // IMPORTANT: store which user created the event
+            'created_by' => auth()->id(),
         ]);
 
         // Fire EventCreated event
@@ -60,7 +63,7 @@ class EventRepository
     }
 
     /**
-     * Count all events for an organization
+     * Count all events for an organization (Owner dashboard)
      */
     public function countEventsByOrganization(int $orgId): int
     {
@@ -68,12 +71,30 @@ class EventRepository
     }
 
     /**
-     * Get all events with attendees for an organization
+     * Get all events with attendees for an organization (Owner dashboard)
      */
     public function getEventsWithAttendees(int $orgId)
     {
         return Event::with('attendees')
             ->where('organization_id', $orgId)
+            ->get();
+    }
+
+    /**
+     * Count events created by a specific user (Event Manager dashboard)
+     */
+    public function countEventsByUser($userId)
+    {
+        return Event::where('created_by', $userId)->count();
+    }
+
+    /**
+     * Get events with attendees created by a specific user
+     */
+    public function getEventsWithAttendeesByUser($userId)
+    {
+        return Event::with('attendees')
+            ->where('created_by', $userId)
             ->get();
     }
 }

@@ -26,4 +26,5 @@ Route::middleware(['auth:sanctum','throttle:100,1'])->group(function () {
     Route::get('/events/{id}/attendees',[AttendeeController::class,'index']);
     Route::post('/events/{id}/attendees',[AttendeeController::class,'store']);
 
+
 });

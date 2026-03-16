@@ -13,6 +13,7 @@ use App\Actions\Event\UpdateEventAction;
 use App\Actions\Event\DeleteEventAction;
 
 use App\Models\Event;
+use App\Events\EventCreated;
 
 class EventController extends Controller
 {
@@ -62,7 +63,10 @@ class EventController extends Controller
             auth()->id()
         );
 
-        $action->execute($dto);
+        $event = $action->execute($dto);
+
+        // FIRE EVENT
+        event(new EventCreated($event));
 
         return redirect()
             ->route('events.index')

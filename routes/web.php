@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
@@ -15,6 +16,7 @@ use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\LandingController;
+use App\Http\Controllers\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,11 +35,9 @@ Route::get('/organization/{id}', [LandingController::class, 'events'])
 |--------------------------------------------------------------------------
 */
 
-/* SHOW BOOK TICKET PAGE */
 Route::get('/book-ticket/{event}', [AttendeeController::class, 'index'])
     ->name('book.ticket.page');
 
-/* STORE ATTENDEE */
 Route::post('/book-ticket/{event}', [AttendeeController::class, 'store'])
     ->name('ticket.book');
 
@@ -144,11 +144,6 @@ Route::middleware('auth')->group(function () {
 
         Route::delete('/{id}', [EventController::class, 'destroy'])->name('events.destroy');
 
-        /*
-        |--------------------------------------------------------------------------
-        | VIEW ATTENDEES FOR EVENT (OWNER DASHBOARD BUTTON)
-        |--------------------------------------------------------------------------
-        */
         Route::get('/{event}/attendees', [EventAttendeeController::class, 'index'])
             ->name('events.attendees');
     });
@@ -173,15 +168,6 @@ Route::middleware('auth')->group(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | CHAT
-    |--------------------------------------------------------------------------
-    */
-
-    Route::get('/chat', [ChatController::class, 'index'])
-        ->name('chat.index');
-
-    /*
-    |--------------------------------------------------------------------------
     | ANALYTICS
     |--------------------------------------------------------------------------
     */
@@ -189,7 +175,47 @@ Route::middleware('auth')->group(function () {
     Route::get('/analytics', [AnalyticsController::class, 'index'])
         ->name('analytics.index');
 
-    Route::get('/book', function () {
-        return view('landing.book');
-    })->name('book');
+    /*
+    |--------------------------------------------------------------------------
+    | CHAT
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/chat/{channel}', [ChatController::class, 'index'])
+        ->name('chat.index');
+
+    Route::post('/chat/send', [ChatController::class, 'send'])
+        ->name('chat.send');
+
+    /*
+    |--------------------------------------------------------------------------
+    | NOTIFICATIONS
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/notification/{id}', [NotificationController::class, 'open'])
+        ->name('notifications.open');
+
+    Route::get('/notifications', [NotificationController::class, 'index'])
+        ->name('notifications.index');
+
+    Route::post('/notifications/mark-all', [NotificationController::class, 'markAsRead'])
+        ->name('notifications.markAll');
+
+});
+
+/*
+|--------------------------------------------------------------------------
+| MAIL TEST
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/mail-test', function () {
+
+    Mail::raw('Mailgun test email working', function ($message) {
+        $message->to('tigercub1907@gmail.com')
+            ->subject('Mailgun Test');
+    });
+
+    return "Mail sent successfully";
 });

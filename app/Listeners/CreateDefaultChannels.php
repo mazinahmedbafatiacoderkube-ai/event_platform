@@ -4,18 +4,19 @@ namespace App\Listeners;
 
 use App\Events\EventCreated;
 use App\Models\Channel;
+use App\Models\ChatChannel;
 
 class CreateDefaultChannels
 {
 
-public function handle(EventCreated $event)
-{
+    public function handle(EventCreated $event)
+    {
 
-Channel::create([
-'name'=>'General',
-'event_id'=>$event->event->id
-]);
+        ChatChannel::create([
+            'name' => 'General',
+            'event_id' => $event->event->id
+        ]);
 
-}
+    }
 
 }

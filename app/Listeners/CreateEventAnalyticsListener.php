@@ -3,18 +3,17 @@
 namespace App\Listeners;
 
 use App\Events\EventCreated;
-use App\Models\Analytics;
+use App\Models\ChatChannel;
 
-class CreateEventAnalyticsListener
+class CreateEventChatChannel
 {
     public function handle(EventCreated $event)
     {
-        // Create a default analytics record for this event
-        Analytics::create([
-            'event_id' => $event->event->id,
-            'views' => 0,
-            'registrations' => 0,
-            'organization_id' => $event->event->organization_id
+        $eventData = $event->event;
+
+        ChatChannel::create([
+            'event_id' => $eventData->id,
+            'name' => $eventData->title . ' Chat',
         ]);
     }
 }
