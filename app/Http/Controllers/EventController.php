@@ -14,16 +14,17 @@ use App\Actions\Event\DeleteEventAction;
 
 use App\Models\Event;
 use App\Events\EventCreated;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class EventController extends Controller
 {
+    use AuthorizesRequests; // ✅ IMPORTANT (this fixes your error)
 
     /*
     |--------------------------------------------------------------------------
     | EVENTS LIST
     |--------------------------------------------------------------------------
     */
-
     public function index()
     {
         $events = Event::where('organization_id', auth()->user()->organization_id)
@@ -33,25 +34,21 @@ class EventController extends Controller
         return view('events.index', compact('events'));
     }
 
-
     /*
     |--------------------------------------------------------------------------
     | CREATE PAGE
     |--------------------------------------------------------------------------
     */
-
     public function create()
     {
         return view('events.create');
     }
-
 
     /*
     |--------------------------------------------------------------------------
     | STORE EVENT
     |--------------------------------------------------------------------------
     */
-
     public function store(CreateEventRequest $request, CreateEventAction $action)
     {
         $dto = new CreateEventDTO(
@@ -73,13 +70,11 @@ class EventController extends Controller
             ->with('success', 'Event created successfully');
     }
 
-
     /*
     |--------------------------------------------------------------------------
     | SHOW EVENT
     |--------------------------------------------------------------------------
     */
-
     public function show($id)
     {
         $event = Event::where('organization_id', auth()->user()->organization_id)
@@ -88,34 +83,30 @@ class EventController extends Controller
         return view('events.show', compact('event'));
     }
 
-
     /*
     |--------------------------------------------------------------------------
     | EDIT PAGE
     |--------------------------------------------------------------------------
     */
-
     public function edit($id)
     {
         $event = Event::findOrFail($id);
 
-        $this->authorize('update', $event);
+        $this->authorize('update', $event); // ✅ now works
 
         return view('events.edit', compact('event'));
     }
-
 
     /*
     |--------------------------------------------------------------------------
     | UPDATE EVENT
     |--------------------------------------------------------------------------
     */
-
     public function update(Request $request, $id, UpdateEventAction $action)
     {
         $event = Event::findOrFail($id);
 
-        $this->authorize('update', $event);
+        $this->authorize('update', $event); // ✅ now works
 
         $dto = new UpdateEventDTO(
             $id,
@@ -132,18 +123,16 @@ class EventController extends Controller
             ->with('success', 'Event updated successfully');
     }
 
-
     /*
     |--------------------------------------------------------------------------
     | DELETE EVENT
     |--------------------------------------------------------------------------
     */
-
     public function destroy($id, DeleteEventAction $action)
     {
         $event = Event::findOrFail($id);
 
-        $this->authorize('delete', $event);
+        $this->authorize('delete', $event); // ✅ now works
 
         $action->execute($id);
 
@@ -151,5 +140,4 @@ class EventController extends Controller
             ->route('events.index')
             ->with('success', 'Event deleted successfully');
     }
-
 }

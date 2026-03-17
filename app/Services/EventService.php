@@ -16,10 +16,10 @@ class EventService
             'organization_id' => $dto->organizationId,
             'title' => $dto->title,
             'description' => $dto->description,
-            'start_time' => $dto->startTime,
-            'end_time' => $dto->endTime,
+            'start_time' => $dto->start_time,
+            'end_time' => $dto->end_time,
             'status' => 'scheduled',
-            'created_by' => $dto->createdBy
+            'created_by' => auth()->id()
         ]);
     }
 }

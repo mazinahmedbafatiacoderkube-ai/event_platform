@@ -23,8 +23,8 @@ class EventRepository
         $event = Event::create([
             'title' => $dto->title,
             'description' => $dto->description,
-            'start_time' => $dto->startTime,
-            'end_time' => $dto->endTime,
+            'start_time' => $dto->start_time,
+            'end_time' => $dto->end_time,
             'organization_id' => $dto->organizationId,
 
             // IMPORTANT: store which user created the event
@@ -47,8 +47,8 @@ class EventRepository
         $event->update([
             'title' => $dto->title,
             'description' => $dto->description,
-            'start_time' => $dto->startTime,
-            'end_time' => $dto->endTime
+            'start_time' => $dto->start_time,
+            'end_time' => $dto->end_time
         ]);
 
         return $event;

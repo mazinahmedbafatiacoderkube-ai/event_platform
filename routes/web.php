@@ -17,6 +17,7 @@ use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\AttendeeRegistrationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,10 +25,11 @@ use App\Http\Controllers\NotificationController;
 |--------------------------------------------------------------------------
 */
 
-Route::get('/', [LandingController::class, 'index'])->name('landing');
+// Route::get('/', [LandingController::class, 'index'])->name('login');
 
-Route::get('/organization/{id}', [LandingController::class, 'events'])
-    ->name('organization.events');
+
+// Route::get('/organization/{id}', [LandingController::class, 'events'])
+//     ->name('organization.events');
 
 /*
 |--------------------------------------------------------------------------
@@ -166,14 +168,6 @@ Route::middleware('auth')->group(function () {
             ->name('staff.delete');
     });
 
-    /*
-    |--------------------------------------------------------------------------
-    | ANALYTICS
-    |--------------------------------------------------------------------------
-    */
-
-    Route::get('/analytics', [AnalyticsController::class, 'index'])
-        ->name('analytics.index');
 
     /*
     |--------------------------------------------------------------------------
@@ -181,11 +175,11 @@ Route::middleware('auth')->group(function () {
     |--------------------------------------------------------------------------
     */
 
-    Route::get('/chat/{channel}', [ChatController::class, 'index'])
-        ->name('chat.index');
+    // Route::get('/chat/{channel}', [ChatController::class, 'index'])
+    //     ->name('chat.index');
 
-    Route::post('/chat/send', [ChatController::class, 'send'])
-        ->name('chat.send');
+    // Route::post('/chat/send', [ChatController::class, 'send'])
+    //     ->name('chat.send');
 
     /*
     |--------------------------------------------------------------------------
@@ -219,3 +213,28 @@ Route::get('/mail-test', function () {
 
     return "Mail sent successfully";
 });
+/*
+|--------------------------------------------------------------------------
+| attendee registration links
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/attendees/register', [AttendeeRegistrationController::class, 'show'])
+    ->name('attendees.register');
+
+Route::post('/attendees/register', [AttendeeRegistrationController::class, 'store'])
+    ->name('attendees.register.submit');
+
+// ATTENDEE PROTECTED ROUTES
+Route::middleware('auth:attendee')->group(function () {
+
+    Route::get('/landing', [LandingController::class, 'index'])
+        ->name('landing');
+
+});
+Route::get('/organization/{id}/events', [LandingController::class, 'events'])
+    ->name('organization.events');
+
+Route::post('/attendee/logout', [AuthController::class, 'logout'])
+    ->middleware('auth:attendee')
+    ->name('attendees.logout');

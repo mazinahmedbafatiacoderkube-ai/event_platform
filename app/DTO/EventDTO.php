@@ -6,8 +6,8 @@ class EventDTO
 {
     public $title;
     public $description;
-    public $startTime;
-    public $endTime;
+    public $start_time;
+    public $end_time;
     public $organizationId;
 
     public function __construct(array $data)

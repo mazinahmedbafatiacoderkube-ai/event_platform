@@ -27,11 +27,18 @@
 <button class="btn btn-dark position-relative dropdown-toggle" type="button" data-bs-toggle="dropdown">
 
 🔔
+@php
+$user = auth('attendee')->user();
+@endphp
 
-@if(auth()->user()->unreadNotifications->count() > 0)
-<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-{{ auth()->user()->unreadNotifications->count() }}
-</span>
+@if($user && $user->unreadNotifications->count() > 0)
+    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+        {{ $user->unreadNotifications->count() }}
+    </span>
+@endif
+
+@if($user && $user->notifications->count() == 0)
+    <p>No notifications</p>
 @endif
 
 </button>
