@@ -16,29 +16,33 @@
 
 <div class="container">
 
-<a class="navbar-brand" href="/dashboard">Event Platform</a>
+@php
+    $attendee = auth('attendee')->user();
+@endphp
 
+<a class="navbar-brand" href="{{ $attendee ? route('landing') : url('/dashboard') }}">
+    Event Platform
+</a>
 <div class="d-flex align-items-center">
 
 @auth
 
+@php
+    $attendee = auth('attendee')->user();
+@endphp
+
+{{-- 🔔 SHOW ONLY IF NOT ATTENDEE --}}
+@if(!$attendee)
 <div class="dropdown">
 
 <button class="btn btn-dark position-relative dropdown-toggle" type="button" data-bs-toggle="dropdown">
 
 🔔
-@php
-$user = auth('attendee')->user();
-@endphp
 
-@if($user && $user->unreadNotifications->count() > 0)
+@if(auth()->user()->unreadNotifications->count() > 0)
     <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-        {{ $user->unreadNotifications->count() }}
+        {{ auth()->user()->unreadNotifications->count() }}
     </span>
-@endif
-
-@if($user && $user->notifications->count() == 0)
-    <p>No notifications</p>
 @endif
 
 </button>
@@ -79,7 +83,6 @@ No notifications
 
 <hr class="dropdown-divider">
 
-<!-- MARK ALL READ AT BOTTOM -->
 <li class="dropdown-item text-center">
 
 <form action="{{ route('notifications.markAll') }}" method="POST">
@@ -96,9 +99,10 @@ Mark all as read
 </ul>
 
 </div>
+@endif
 
 <span class="text-white ms-3">
-{{ auth()->user()->name }}
+{{ $attendee ? $attendee->name : auth()->user()->name }}
 </span>
 
 @endauth

@@ -30,7 +30,7 @@ return [
 
         'attendees' => [
             'driver' => 'eloquent',
-            'model' => App\Models\AttendeeRegistration::class,
+            'model' => App\Models\Attendee::class, // ✅ Use separate Attendee model
         ],
 
     ],
@@ -39,6 +39,12 @@ return [
 
         'users' => [
             'provider' => 'users',
+            'table' => 'password_reset_tokens',
+            'expire' => 60,
+        ],
+
+        'attendees' => [
+            'provider' => 'attendees',
             'table' => 'password_reset_tokens',
             'expire' => 60,
         ],

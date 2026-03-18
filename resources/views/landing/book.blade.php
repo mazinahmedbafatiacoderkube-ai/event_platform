@@ -17,14 +17,24 @@
 <form method="POST" action="{{ route('ticket.book', $event) }}">
 @csrf
 
-<div class="mb-3">
+{{-- <div class="mb-3">
 <label class="form-label">Full Name</label>
 <input type="text" name="name" class="form-control" placeholder="Enter your name" required>
+</div> --}}
+<div class="mb-3">
+    <label class="form-label">Full Name</label>
+    <input type="text" name="name" class="form-control" 
+           value="{{ auth('attendee')->user()->name }}" readonly>
 </div>
 
-<div class="mb-3">
+{{-- <div class="mb-3">
 <label class="form-label">Email Address</label>
 <input type="email" name="email" class="form-control" placeholder="Enter your email" required>
+</div> --}}
+<div class="mb-3">
+    <label class="form-label">Email Address</label>
+    <input type="email" name="email" class="form-control" 
+           value="{{ auth('attendee')->user()->email }}" readonly>
 </div>
 
 <div class="mb-3">

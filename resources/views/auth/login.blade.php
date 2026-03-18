@@ -51,17 +51,31 @@
                     </button>
                 </div>
 
-                <!-- NEW BUTTON -->
-                <div class="d-grid mb-2">
-                    <a href="{{ route('attendees.register') }}" class="btn btn-success">
-                        Register as Attendee
-                    </a>
-                </div>
+                <!-- 🔽 NEW DROPDOWN REGISTER BUTTON -->
+                <div class="d-grid mb-3">
+                    <div class="dropdown">
+                        <button class="btn btn-success dropdown-toggle w-100"
+                                type="button"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                            Register
+                        </button>
 
-                <div class="d-grid mb-2">
-                    <a href="{{ route('register') }}" class="btn btn-secondary">
-                        Register as Organization
-                    </a>
+                        <ul class="dropdown-menu w-100 shadow border-0">
+                            <li>
+                                <a class="dropdown-item py-2"
+                                   href="{{ route('attendees.register') }}">
+                                    👤 Register as Attendee
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item py-2"
+                                   href="{{ route('register') }}">
+                                    🏢 Register as Organization
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
 
                 <div class="text-center mt-3">
@@ -77,7 +91,6 @@
 
 </div>
 
-
 {{-- Prevent back after logout --}}
 <script>
 history.pushState(null, null, location.href);
@@ -85,4 +98,5 @@ window.onpopstate = function () {
     history.go(1);
 };
 </script>
-@endsection
+
+@endsection 

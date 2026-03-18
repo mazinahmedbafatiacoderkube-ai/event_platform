@@ -6,7 +6,7 @@
         .hero {
             background: #4f46e5;
             color: white;
-            padding: 60px;
+            padding: 30px 20px;
             text-align: center;
             border-radius: 8px;
         }
@@ -48,22 +48,18 @@
         <!-- Tickets -->
         <h2>Your Booked Tickets</h2>
         <hr>
-        @if($tickets->count() > 0)
-            @foreach($tickets as $ticket)
-                <div class="card mb-3 shadow-sm">
-                    <div class="card-body">
-                        <h5>{{ $ticket->event->title ?? 'Event booked ' }}</h5>
-                       
-                        <p>
-                            <strong>Date:</strong>
-                            {{ \Carbon\Carbon::parse($ticket->event->start_time ?? now())->format('d M Y') }}
-                        </p>
-                    </div>
-                </div>
-            @endforeach
-        @else
-            <p class="text-muted">You have not booked any tickets yet.</p>
-        @endif
+        <div class="card mb-3 shadow-sm">
+            <div class="card-body">
+                <h5>{{ auth('attendee')->user()->event->title ?? 'Event booked' }}</h5>
+                <p><strong>Name:</strong> {{ auth('attendee')->user()->name }}</p>
+                <p><strong>Email:</strong> {{ auth('attendee')->user()->email }}</p>
+                <p><strong>Ticket Type:</strong> {{ auth('attendee')->user()->ticket_type }}</p>
+                <p>
+                    <strong>Date:</strong>
+                    {{ \Carbon\Carbon::parse(auth('attendee')->user()->event->start_time ?? now())->format('d M Y') }}
+                </p>
+            </div>
+        </div>
  
         <!-- Upcoming Events -->
         <h2 class="mt-5">Upcoming Events</h2>
@@ -116,4 +112,3 @@
     </div>
  
 @endsection
- 

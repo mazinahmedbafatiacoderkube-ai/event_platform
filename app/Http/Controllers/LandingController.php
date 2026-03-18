@@ -1,25 +1,31 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Services\LandingService;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Attendee;
+use App\Models\Event;
+use App\Models\Organization;
+
 class LandingController extends Controller
 {
-
     public function index(LandingService $service)
     {
-
+        // Logged-in attendee
         $attendee = Auth::guard('attendee')->user();
 
-        $organizations = \App\Models\Organization::latest()->get();
+        // Eager-load event relationship
+        $attendee->load('event');
 
-        // ✅ Get tickets of logged-in attendee
-        $tickets = \App\Models\Attendee::where('attendee_id', $attendee->id)->get();
-        
-        $events = \App\Models\Event::latest()->get();
+        // Get all organizations
+        $organizations = Organization::latest()->get();
 
+        // Get all events
+        $events = Event::latest()->get();
 
-        return view('landing.index', compact('attendee', 'organizations', 'tickets','events'));
+        // No separate tickets query is needed; ticket info is in $attendee
+        return view('landing.index', compact('attendee', 'organizations', 'events'));
     }
 
     public function events($id, LandingService $service)
@@ -28,5 +34,4 @@ class LandingController extends Controller
 
         return view('landing.events', compact('events'));
     }
-
 }

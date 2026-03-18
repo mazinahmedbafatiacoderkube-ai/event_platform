@@ -2,40 +2,28 @@
 
 namespace App\Services;
 
-use App\Repositories\AttendeeRepository;
+use Illuminate\Http\Request;
+use App\Models\Attendee;
 
 class AttendeeService
 {
+    public function register(Request $request, $eventId)
+    {
+        // ✅ Validation
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'ticket_type' => 'required|string|max:50',
+        ]);
 
-protected $repo;
+        // ✅ Save directly into "attendees" table
+        $attendee = Attendee::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'ticket_type' => $request->ticket_type,
+            'event_id' => $eventId,
+        ]);
 
-public function __construct(AttendeeRepository $repo)
-{
-$this->repo = $repo;
-}
-
-public function list($eventId)
-{
-return $this->repo->getByEvent($eventId);
-}
-
-public function register($request,$eventId)
-{
-
-$request->validate([
-'name' => 'required',
-'email' => 'required|email'
-]);
-
-$data = [
-'name' => $request->name,
-'email' => $request->email,
-'event_id' => $eventId,
- 'ticket_type' => $request->ticket_type
-];
-
-return $this->repo->create($data);
-
-}
-
+        return $attendee;
+    }
 }
