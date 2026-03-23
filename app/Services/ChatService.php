@@ -24,9 +24,12 @@ class ChatService
             ]);
         } else {
             // Attendee message
+            $attendeeId = session()->getId(); // unique per attendee
+
             $message = Message::create([
                 'event_id' => $eventId,
-                'user_id' => null,          // Ensure user_id is null
+                'user_id' => null,
+                'attendee_id' => $attendeeId,
                 'attendee_name' => request('name'),
                 'attendee_email' => request('email'),
                 'message' => $messageText,
@@ -50,10 +53,8 @@ class ChatService
                 return [
                     'id' => $msg->id,
                     'message' => $msg->message,
-
-                    'sender_id' => $msg->user_id,
+                    'sender_id' => $msg->user_id ?? $msg->attendee_id ?? null,
                     'sender_type' => $msg->user_id ? 'user' : 'attendee',
-
                     'sender_name' => $msg->user
                         ? $msg->user->name
                         : $msg->attendee_name,

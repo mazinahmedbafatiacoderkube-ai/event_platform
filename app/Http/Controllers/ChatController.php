@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Services\ChatService;
+use Illuminate\Support\Facades\Auth; // import Auth facade
 
 class ChatController extends Controller
 {
@@ -37,9 +38,9 @@ class ChatController extends Controller
         ]);
 
         // Determine the sender (organization/staff or attendee)
-        $user = auth()->user(); // default guard (organization/staff)
+        $user = Auth::user(); // default guard (organization/staff)
         if (!$user) {
-            $user = auth()->guard('attendee')->user(); // attendee guard
+            $user = Auth::guard('attendee')->user(); // attendee guard
         }
 
         // Send message using ChatService

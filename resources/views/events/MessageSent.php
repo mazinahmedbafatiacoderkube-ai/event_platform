@@ -32,9 +32,8 @@ class MessageSent implements ShouldBroadcast
                 'id' => $this->message->id,
                 'message' => $this->message->message,
 
-                'sender_id' => $this->message->user_id,
+                'sender_id' => $this->message->user_id ?? $this->message->attendee_id ?? null,
                 'sender_type' => $this->message->user_id ? 'user' : 'attendee',
-
                 'sender_name' => $this->message->user
                     ? $this->message->user->name
                     : $this->message->attendee_name,

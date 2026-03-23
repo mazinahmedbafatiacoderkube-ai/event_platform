@@ -7,8 +7,8 @@ use Illuminate\Http\Request;
 use App\DTO\RegisterOrganizationDTO;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-
 use App\Models\AttendeeRegistration;
+use App\Models\User;
 
 class AuthController extends Controller
 {
@@ -19,6 +19,7 @@ class AuthController extends Controller
         $this->authService = $authService;
     }
 
+    // ---------------- Web Pages ----------------
     public function loginPage()
     {
         if (Auth::check()) {
@@ -37,6 +38,7 @@ class AuthController extends Controller
         return view('auth.register');
     }
 
+    // ---------------- Web Login ----------------
     public function login(Request $request)
     {
         $validated = $request->validate([
@@ -44,18 +46,18 @@ class AuthController extends Controller
             'password' => 'required'
         ]);
 
-        // 1. Organization Login
+        // 1. Organization login (web)
         if (Auth::attempt($request->only('email', 'password'))) {
             $request->session()->regenerate();
             $user = Auth::user();
-            $token = $user->createToken('user-token')->plainTextToken;
+            $token = $user->createToken('user-token')->plainTextToken; // optional
 
             return redirect()->route('dashboard')
                 ->with('success', 'Login successful')
                 ->with('token', $token);
         }
 
-        // 2. Attendee Login
+        // 2. Attendee login (web)
         $attendee = AttendeeRegistration::where('email', $validated['email'])->first();
 
         if ($attendee && Hash::check($validated['password'], $attendee->password)) {
@@ -72,6 +74,7 @@ class AuthController extends Controller
         ])->withInput();
     }
 
+    // ---------------- Web Logout ----------------
     public function logout(Request $request)
     {
         Auth::logout();
@@ -83,6 +86,7 @@ class AuthController extends Controller
         return redirect('/login')->with('success', 'Logged out successfully');
     }
 
+    // ---------------- Web Registration ----------------
     public function register(Request $request)
     {
         $validated = $request->validate([
@@ -126,5 +130,43 @@ class AuthController extends Controller
         $this->authService->registerOrganization($dto);
 
         return back()->with('success', 'Organization registered successfully');
+    }
+
+    // ---------------- API Login (Token-based) ----------------
+    public function apiLogin(Request $request)
+    {
+        $validated = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
+
+        $user = User::where('email', $validated['email'])->first();
+
+        if (!$user || !Hash::check($validated['password'], $user->password)) {
+            return response()->json([
+                'message' => 'Invalid credentials'
+            ], 401);
+        }
+
+        // create Sanctum token
+        $token = $user->createToken('user-token')->plainTextToken;
+
+        return response()->json([
+            'user' => $user,
+            'token' => $token
+        ]);
+    }
+
+    // ---------------- API Logout ----------------
+    public function apiLogout(Request $request)
+    {
+        $user = $request->user();
+        if ($user) {
+            $user->tokens()->delete();
+        }
+
+        return response()->json([
+            'message' => 'Logged out successfully'
+        ]);
     }
 }

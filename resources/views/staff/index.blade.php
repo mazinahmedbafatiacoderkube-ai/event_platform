@@ -115,38 +115,20 @@
 
 @section('scripts')
     <script>
-        const currentUserId = {{ auth()->id() ?? 'null' }};
+        // Single declaration for current user
+        const currentUserId = {!! auth()->id() ?? 0 !!};
 
         function renderMessage(msg) {
-            const senderId = msg.sender_id;
-            const senderType = msg.sender_type;
-            const senderName = msg.sender_name;
-
-            const myId = currentUserId ? Number(currentUserId) : null;
-            const myType = currentUserId ? 'user' : 'attendee';
-
-            const isMine =
-                senderId &&
-                myId &&
-                Number(senderId) === myId &&
-                senderType === myType;
+            const senderId = msg.user_id ?? null;
+            const isMine = Number(senderId) === Number(currentUserId);
 
             return `
-            <div style="display:flex; margin-bottom:8px; justify-content:${isMine ? 'flex-end' : 'flex-start'}">
-                <div style="
-                    padding:8px 12px;
-                    border-radius:12px;
-                    max-width:60%;
-                    background:${isMine ? '#007bff' : '#e4e6eb'};
-                    color:${isMine ? '#fff' : '#000'};
-                ">
-                    <div style="font-size:12px; font-weight:bold;">
-                        ${senderName}
+                <div style="display:flex; justify-content:${isMine ? 'flex-end' : 'flex-start'}">
+                    <div style="background:${isMine ? 'blue' : 'gray'}; color:white; padding:10px; margin:5px; max-width:80%;">
+                        ${msg.message}
                     </div>
-                    <div>${msg.message}</div>
                 </div>
-            </div>
-        `;
+            `;
         }
 
         let staffEventId = null;
@@ -159,6 +141,7 @@
 
             if (!staffEventId) return;
 
+            // Fetch previous messages
             fetch(`/events/${staffEventId}/messages`)
                 .then(res => res.json())
                 .then(data => {
@@ -168,8 +151,10 @@
                     staffChatBox.scrollTop = staffChatBox.scrollHeight;
                 });
 
+            // Leave other channels
             window.Echo.leaveAllChannels();
 
+            // Listen for new messages
             window.Echo.channel(`event.${staffEventId}`)
                 .listen('MessageSent', (e) => {
                     staffChatBox.innerHTML += renderMessage(e.message);
@@ -193,5 +178,4 @@
             input.value = '';
         }
     </script>
-
 @endsection
