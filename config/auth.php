@@ -30,7 +30,7 @@ return [
 
         'attendees' => [
             'driver' => 'eloquent',
-            'model' => App\Models\Attendee::class, // ✅ Use separate Attendee model
+            'model' => App\Models\AttendeeRegistration::class, // ✅ Use separate Attendee model
         ],
 
     ],

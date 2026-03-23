@@ -42,23 +42,12 @@ class AuthController extends Controller
         $validated = $request->validate([
             'email' => 'required|email',
             'password' => 'required'
-        ], [
-            'email.required' => 'Email is required',
-            'email.email' => 'Enter a valid email address',
-            'password.required' => 'Password is required',
         ]);
 
-        /*
-        |----------------------------------------------------------
-        | 1. ORGANIZATION LOGIN (users table)
-        |----------------------------------------------------------
-        */
+        // 1. Organization Login
         if (Auth::attempt($request->only('email', 'password'))) {
-
             $request->session()->regenerate();
-
             $user = Auth::user();
-
             $token = $user->createToken('user-token')->plainTextToken;
 
             return redirect()->route('dashboard')
@@ -66,49 +55,18 @@ class AuthController extends Controller
                 ->with('token', $token);
         }
 
-        /*
-        |----------------------------------------------------------
-        | 2. ATTENDEE LOGIN (attendees table)
-        |----------------------------------------------------------
-        */
+        // 2. Attendee Login
         $attendee = AttendeeRegistration::where('email', $validated['email'])->first();
 
         if ($attendee && Hash::check($validated['password'], $attendee->password)) {
-
             Auth::guard('attendee')->login($attendee);
-
             $request->session()->regenerate();
 
-            $token = $attendee->createToken('attendee-token')->plainTextToken;
-
-            return redirect()->route('landing')
-                ->with('success', 'Login successful')
-                ->with('token', $token);
-        }
-
-        /*
-        |----------------------------------------------------------
-        | 3. ATTENDEE REGISTRATION LOGIN (attendee_registrations)
-        |----------------------------------------------------------
-        */
-        $attendeeReg = AttendeeRegistration::where('email', $validated['email'])->first();
-
-        if ($attendeeReg && Hash::check($validated['password'], $attendeeReg->password)) {
-
-            // login using attendee guard (optional)
-            Auth::guard('attendee')->loginUsingId($attendeeReg->id);
-
-            $request->session()->regenerate();
-
-            return redirect()->route('landing')
+            return redirect()->route('landing') // make sure route exists
                 ->with('success', 'Login successful');
         }
 
-        /*
-        |----------------------------------------------------------
-        | 4. FAIL
-        |----------------------------------------------------------
-        */
+        // 3. Failed login
         return back()->withErrors([
             'email' => 'Invalid email or password'
         ])->withInput();

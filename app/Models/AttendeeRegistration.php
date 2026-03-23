@@ -21,4 +21,8 @@ class AttendeeRegistration extends Authenticatable
     protected $hidden = [
         'password',
     ];
+    public function event()
+{
+    return $this->belongsTo(Event::class, 'event_id'); // make sure event_id exists in attendee_registrations table
+}
 }

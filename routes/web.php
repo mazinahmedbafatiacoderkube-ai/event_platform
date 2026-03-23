@@ -19,6 +19,26 @@ use App\Http\Controllers\LandingController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\AttendeeRegistrationController;
 
+
+// Attendee Dashboard
+Route::middleware('auth:attendee')->group(function () {
+    Route::get('/landing', [LandingController::class, 'index'])
+        ->name('landing');
+
+    Route::post('/attendee/logout', [AuthController::class, 'logout'])
+        ->name('attendees.logout');
+});
+
+
+
+// Route::middleware(['auth'])->group(function () {
+    // Fetch messages for any event
+    Route::get('/events/{eventId}/messages', [ChatController::class, 'fetchMessages']);
+
+    // Send message for any event
+    Route::post('/events/{eventId}/messages', [ChatController::class, 'sendMessage']);
+
+
 /*
 |--------------------------------------------------------------------------
 | HOME (ORGANIZATION LANDING PAGE)
@@ -195,7 +215,6 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/notifications/mark-all', [NotificationController::class, 'markAsRead'])
         ->name('notifications.markAll');
-
 });
 
 /*
@@ -230,7 +249,6 @@ Route::middleware('auth:attendee')->group(function () {
 
     Route::get('/landing', [LandingController::class, 'index'])
         ->name('landing');
-
 });
 Route::get('/organization/{id}/events', [LandingController::class, 'events'])
     ->name('organization.events');
