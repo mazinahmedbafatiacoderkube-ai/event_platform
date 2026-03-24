@@ -2,28 +2,34 @@
 
 namespace App\Models;
 
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use App\Models\Event;
 
-class Attendee extends Authenticatable
+class Attendee extends Model
 {
-    use Notifiable;
-
-    protected $table = 'attendees';
+    use HasFactory;
 
     protected $fillable = [
+        'event_id',
+        'title',
         'name',
         'email',
         'ticket_type',
-        'event_id',
-        'attendee_id', // or any unique attendee identifier
+        'checkin_status'
     ];
-
-    protected $hidden = ['password'];
-
-    // Relationship to Event if needed
-    public function event()
+     public function event()
     {
         return $this->belongsTo(Event::class);
+    }
+
+    protected static function booted()
+    {
+        static::creating(function ($attendee) {
+            $event = Event::find($attendee->event_id);
+            if ($event) {
+                $attendee->title = $event->title; // Automatically fill title from event
+            }
+        });
     }
 }

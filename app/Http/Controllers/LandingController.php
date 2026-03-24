@@ -6,32 +6,32 @@ use App\Services\LandingService;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Attendee;
 use App\Models\Event;
-use App\Models\Organization;
+use App\Models\Organization; // Make sure this exists
 
 class LandingController extends Controller
 {
     public function index(LandingService $service)
     {
         // Logged-in attendee
-        $attendee = Auth::guard('attendee')->user();
+        $user = Auth::guard('attendee')->user();
 
-        // Eager-load event relationship
-        $attendee->load('event');
-
-        // Get all organizations
-        $organizations = Organization::latest()->get();
-
-        // Get all events
+        // Fetch all upcoming events
         $events = Event::latest()->get();
 
-        // No separate tickets query is needed; ticket info is in $attendee
-        return view('landing.index', compact('attendee', 'organizations', 'events'));
+        // Fetch all organizations to display
+        $organizations = Organization::all();
+
+        // Fetch this attendee's booked tickets
+        $bookedTickets = Attendee::where('email', $user->email)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('landing.index', compact('user', 'events', 'organizations', 'bookedTickets'));
     }
 
     public function events($id, LandingService $service)
     {
         $events = $service->getOrganizationEvents($id);
-
         return view('landing.events', compact('events'));
     }
 }

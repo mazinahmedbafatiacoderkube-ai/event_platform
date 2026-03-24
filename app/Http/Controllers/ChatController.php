@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Services\ChatService;
-use Illuminate\Support\Facades\Auth; // import Auth facade
+use App\Events\MessageSent;
 
 class ChatController extends Controller
 {
@@ -15,9 +15,6 @@ class ChatController extends Controller
         $this->chatService = $chatService;
     }
 
-    /**
-     * Fetch all messages for a given event
-     */
     public function fetchMessages($eventId)
     {
         return response()->json(
@@ -25,31 +22,23 @@ class ChatController extends Controller
         );
     }
 
-    /**
-     * Send a new message for an event
-     */
     public function sendMessage(Request $request, $eventId)
     {
-        // Validate incoming request
         $request->validate([
             'message' => 'required|string|max:1000',
-            'name' => 'sometimes|string|max:255',
-            'email' => 'sometimes|email|max:255'
         ]);
 
-        // Determine the sender (organization/staff or attendee)
-        $user = Auth::user(); // default guard (organization/staff)
-        if (!$user) {
-            $user = Auth::guard('attendee')->user(); // attendee guard
+        // Determine sender: user or attendee
+        $sender = auth()->user() ?? auth()->guard('attendee')->user();
+
+        if (!$sender) {
+            return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        // Send message using ChatService
-        $message = $this->chatService->sendMessage(
-            $eventId,
-            $user,                // can be null if needed
-            $request->message
-        );
+        $message = $this->chatService->sendMessage($eventId, $sender, $request->message);
+
+        event(new MessageSent($message, $sender));
 
         return response()->json($message);
     }
-}
+}   

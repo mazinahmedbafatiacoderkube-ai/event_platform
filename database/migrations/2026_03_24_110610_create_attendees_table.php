@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::create('attendees', function (Blueprint $table) {
             $table->id();
             $table->foreignId('event_id')->constrained()->cascadeOnDelete();
+            $table->string('title'); // Event title linked
             $table->string('name');
             $table->string('email');
             $table->string('ticket_type');
